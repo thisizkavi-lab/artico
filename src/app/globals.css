@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+/* Base Styles */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-secondary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* RTL Support */
+html[dir="rtl"] body {
+    direction: rtl;
+}
+
+/* Custom Gradient Classes */
+@layer utilities {
+    .gradient-hero {
+        background: linear-gradient(135deg, #3366FF 0%, #5B8DEF 100%);
+    }
+
+    .gradient-cta {
+        background: linear-gradient(135deg, #00D26A 0%, #00E676 100%);
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, #00D26A 0%, #7FFFB2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+}
+
+/* Phone Animation */
+@keyframes phoneFloat {
+
+    0%,
+    100% {
+        transform: perspective(1000px) rotateY(-8deg) rotateX(5deg) translateY(0);
+    }
+
+    50% {
+        transform: perspective(1000px) rotateY(-5deg) rotateX(3deg) translateY(-15px);
+    }
+}
+
+.animate-phone-float {
+    animation: phoneFloat 6s ease-in-out infinite;
+}
+
+/* Hero curved bottom */
+.hero-curve::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: white;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+
+/* Slide-in animation for overlays */
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in-left {
+    animation: slideInLeft 0.3s ease-out forwards;
+}
+
+/* Fade in */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.2s ease-out forwards;
+}
