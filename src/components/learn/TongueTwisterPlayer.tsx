@@ -47,6 +47,53 @@ export default function TongueTwisterPlayer({ onClose, initialTwisterId }: Tongu
     const [currentWordIndex, setCurrentWordIndex] = useState<{ line: number; word: number } | null>(null);
     const [shadowPhase, setShadowPhase] = useState<"listen" | "repeat">("listen");
     const [isRecording, setIsRecording] = useState(false);
+    const [audioUrl, setAudioUrl] = useState<string | null>(null);
+
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const chunksRef = useRef<Blob[]>([]);
+
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+            mediaRecorderRef.current = mediaRecorder;
+            chunksRef.current = [];
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) chunksRef.current.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+                const url = URL.createObjectURL(blob);
+                setAudioUrl(url);
+            };
+
+            mediaRecorder.start();
+            setIsRecording(true);
+            setAudioUrl(null);
+        } catch (err) {
+            console.error("Error accessing microphone:", err);
+            alert("Could not access microphone. Please allow permissions.");
+        }
+    };
+
+    const stopRecording = () => {
+        if (mediaRecorderRef.current && isRecording) {
+            mediaRecorderRef.current.stop();
+            setIsRecording(false);
+            // Stop tracks to release microphone
+            mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+        }
+    };
+
+    const toggleRecording = () => {
+        if (isRecording) {
+            stopRecording();
+        } else {
+            startRecording();
+        }
+    };
 
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const startTimeRef = useRef<number>(0);
@@ -260,10 +307,10 @@ export default function TongueTwisterPlayer({ onClose, initialTwisterId }: Tongu
                                         <span
                                             key={wordIdx}
                                             className={`transition-all duration-150 ${isActive
-                                                    ? "text-primary font-bold scale-110 inline-block"
-                                                    : isPast
-                                                        ? "text-gray-300"
-                                                        : "text-gray-500"
+                                                ? "text-primary font-bold scale-110 inline-block"
+                                                : isPast
+                                                    ? "text-gray-300"
+                                                    : "text-gray-500"
                                                 }`}
                                         >
                                             {word.text}{" "}
@@ -310,8 +357,8 @@ export default function TongueTwisterPlayer({ onClose, initialTwisterId }: Tongu
                             key={s}
                             onClick={() => setSpeed(s)}
                             className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${speed === s
-                                    ? "bg-primary text-white"
-                                    : "text-gray-400 hover:text-white"
+                                ? "bg-primary text-white"
+                                : "text-gray-400 hover:text-white"
                                 }`}
                         >
                             {s}x
@@ -343,8 +390,8 @@ export default function TongueTwisterPlayer({ onClose, initialTwisterId }: Tongu
                             key={m}
                             onClick={() => setMode(m)}
                             className={`px-5 py-2.5 rounded-full font-medium transition-all ${mode === m
-                                    ? "bg-white text-gray-900"
-                                    : "bg-white/10 text-white hover:bg-white/20"
+                                ? "bg-white text-gray-900"
+                                : "bg-white/10 text-white hover:bg-white/20"
                                 }`}
                         >
                             {m === "listen" && "🎧 Listen"}
@@ -357,18 +404,51 @@ export default function TongueTwisterPlayer({ onClose, initialTwisterId }: Tongu
                 {/* Practice mode indicator */}
                 {mode === "practice" && (
                     <div className="mt-6 text-center">
-                        <p className="text-gray-400 text-sm mb-3">
-                            Press the button below to record yourself
-                        </p>
-                        <button
-                            onClick={() => setIsRecording(!isRecording)}
-                            className={`px-6 py-3 rounded-full font-medium transition-all ${isRecording
-                                    ? "bg-red-500 text-white animate-pulse"
-                                    : "bg-red-500/20 text-red-400 hover:bg-red-500/30"
-                                }`}
-                        >
-                            {isRecording ? "⏹️ Stop Recording" : "🎙️ Start Recording"}
-                        </button>
+                        {!audioUrl ? (
+                            <>
+                                <p className="text-gray-400 text-sm mb-3">
+                                    {isRecording ? "Recording... Say the tongue twister!" : "Press below to start recording"}
+                                </p>
+                                <button
+                                    onClick={toggleRecording}
+                                    className={`px-6 py-3 rounded-full font-medium transition-all flex items-center gap-2 mx-auto ${isRecording
+                                        ? "bg-red-500 text-white animate-pulse"
+                                        : "bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                                        }`}
+                                >
+                                    {isRecording ? (
+                                        <>
+                                            <span className="animate-pulse">●</span> Stop Recording
+                                        </>
+                                    ) : (
+                                        <>
+                                            🎙️ Start Recording
+                                        </>
+                                    )}
+                                </button>
+                            </>
+                        ) : (
+                            <div className="flex flex-col items-center gap-4">
+                                <p className="text-green-400 font-medium">Recording saved!</p>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => {
+                                            const audio = new Audio(audioUrl);
+                                            audio.play();
+                                        }}
+                                        className="px-5 py-2.5 bg-white/10 hover:bg-white/20 rounded-full text-white font-medium flex items-center gap-2"
+                                    >
+                                        ▶️ Play My Recording
+                                    </button>
+                                    <button
+                                        onClick={() => setAudioUrl(null)}
+                                        className="px-5 py-2.5 bg-white/5 hover:bg-white/10 rounded-full text-gray-400 hover:text-white font-medium"
+                                    >
+                                        Try Again
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

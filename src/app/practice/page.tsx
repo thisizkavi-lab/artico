@@ -6,6 +6,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import AppNavbar from "@/components/learn/AppNavbar";
 import { levels } from "@/lib/course-data";
 import PracticeSession from "@/components/practice/PracticeSession";
+import TongueTwisterPlayer from "@/components/learn/TongueTwisterPlayer";
 
 type PracticeStep = "level-picker" | "module-picker" | "practice";
 
@@ -131,32 +132,36 @@ function PracticeContent() {
 
             {/* Practice Session */}
             {step === "practice" && selectedModule && (
-                <div className="min-h-screen bg-gray-custom-50">
-                    <div className="bg-white border-b border-gray-custom-200 px-6 py-4">
-                        <div className="max-w-4xl mx-auto flex items-center justify-between">
-                            <button
-                                onClick={handleBack}
-                                className="flex items-center gap-2 text-gray-custom-600 hover:text-dark transition-colors"
-                            >
-                                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M15 18l-6-6 6-6" />
-                                </svg>
-                                Back
-                            </button>
-                            <h2 className="font-bold text-dark">
-                                Practice: {selectedModule.title}
-                            </h2>
-                            <div className="w-16" />
+                selectedModule.id === "tongue-twisters" ? (
+                    <TongueTwisterPlayer onClose={handleBack} />
+                ) : (
+                    <div className="min-h-screen bg-gray-custom-50">
+                        <div className="bg-white border-b border-gray-custom-200 px-6 py-4">
+                            <div className="max-w-4xl mx-auto flex items-center justify-between">
+                                <button
+                                    onClick={handleBack}
+                                    className="flex items-center gap-2 text-gray-custom-600 hover:text-dark transition-colors"
+                                >
+                                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M15 18l-6-6 6-6" />
+                                    </svg>
+                                    Back
+                                </button>
+                                <h2 className="font-bold text-dark">
+                                    Practice: {selectedModule.title}
+                                </h2>
+                                <div className="w-16" />
+                            </div>
+                        </div>
+
+                        <div className="max-w-4xl mx-auto px-6 py-12">
+                            <PracticeSession
+                                moduleId={selectedModule.id}
+                                onComplete={handleComplete}
+                            />
                         </div>
                     </div>
-
-                    <div className="max-w-4xl mx-auto px-6 py-12">
-                        <PracticeSession
-                            moduleId={selectedModule.id}
-                            onComplete={handleComplete}
-                        />
-                    </div>
-                </div>
+                )
             )}
         </div>
     );
