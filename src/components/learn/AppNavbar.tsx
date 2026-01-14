@@ -7,7 +7,7 @@ import { useLanguage } from "@/lib/language-context";
 import { languageInfo } from "@/lib/translations";
 import { getUnreadCount, getNotifications, markAsRead, markAllAsRead, notificationConfig, formatNotificationTime, Notification } from "@/lib/notification-data";
 import { getTotalUnreadMessages, getConversations, getMessages, sendMessage, markConversationAsRead, updateConversationTheme, messageThemes, formatConversationTime, formatMessageTime, Conversation, Message, MessageTheme } from "@/lib/message-data";
-import FriendDiscovery from "@/components/profile/FriendDiscovery";
+
 
 interface AppNavbarProps {
     activeTab: "learn" | "practice" | "community";
@@ -19,7 +19,6 @@ export default function AppNavbar({ activeTab }: AppNavbarProps) {
     const [mounted, setMounted] = useState(false);
 
     // Panel states
-    const [showFindFriends, setShowFindFriends] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
     const [showMessages, setShowMessages] = useState(false);
     const [showLanguage, setShowLanguage] = useState(false);
@@ -145,19 +144,6 @@ export default function AppNavbar({ activeTab }: AppNavbarProps) {
 
                     {/* Right Actions */}
                     <div className="flex items-center gap-2">
-                        {/* Find Friends */}
-                        <button
-                            onClick={() => setShowFindFriends(true)}
-                            className="w-10 h-10 rounded-full flex items-center justify-center text-gray-custom-500 hover:bg-gray-custom-50 transition-colors"
-                        >
-                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                                <circle cx="8.5" cy="7" r="4" />
-                                <line x1="20" y1="8" x2="20" y2="14" />
-                                <line x1="23" y1="11" x2="17" y2="11" />
-                            </svg>
-                        </button>
-
                         {/* Notifications */}
                         <button
                             onClick={handleOpenNotifications}
@@ -207,11 +193,6 @@ export default function AppNavbar({ activeTab }: AppNavbarProps) {
                     </div>
                 </div>
             </nav>
-
-            {/* Find Friends Modal */}
-            {showFindFriends && (
-                <FriendDiscovery onClose={() => setShowFindFriends(false)} />
-            )}
 
             {/* Notifications Panel */}
             {showNotifications && (
@@ -437,8 +418,8 @@ function ChatView({ conversation, messages, newMessage, onNewMessageChange, onSe
                 {messages.map((msg) => (
                     <div key={msg.id} className={`flex ${msg.senderId === "current-user" ? "justify-end" : "justify-start"}`}>
                         <div className={`max-w-[75%] px-4 py-2 rounded-2xl ${msg.senderId === "current-user"
-                                ? `${theme.bubble} text-white`
-                                : "bg-white text-dark"
+                            ? `${theme.bubble} text-white`
+                            : "bg-white text-dark"
                             }`}>
                             <p className="text-sm">{msg.content}</p>
                             <p className={`text-xs mt-1 ${msg.senderId === "current-user" ? "text-white/70" : "text-gray-custom-400"}`}>

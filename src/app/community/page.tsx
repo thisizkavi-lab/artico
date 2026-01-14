@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { LanguageProvider } from "@/lib/language-context";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
 import AppNavbar from "@/components/learn/AppNavbar";
+import FriendDiscovery from "@/components/profile/FriendDiscovery";
 import {
     Post,
     PostCategory,
@@ -19,23 +20,29 @@ import {
     formatRelativeTime,
     Comment
 } from "@/lib/community-data";
+import { getAddedFriends, DiscoverableUser } from "@/lib/discover-data";
 
+type CommunityTab = "feed" | "discover" | "friends";
 type CommunityView = "feed" | "post-detail" | "create-post";
 
 function CommunityContent() {
     const { user } = useAuth();
+    const [activeTab, setActiveTab] = useState<CommunityTab>("feed");
     const [view, setView] = useState<CommunityView>("feed");
     const [posts, setPosts] = useState<Post[]>([]);
     const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
     const [filterCategory, setFilterCategory] = useState<PostCategory | "all">("all");
     const [mounted, setMounted] = useState(false);
+    const [friends, setFriends] = useState<DiscoverableUser[]>([]);
 
     useEffect(() => {
         setMounted(true);
         setPosts(getPosts());
+        setFriends(getAddedFriends());
     }, []);
 
     const refreshPosts = () => setPosts(getPosts());
+    const refreshFriends = () => setFriends(getAddedFriends());
 
     const handleViewPost = (postId: string) => {
         setSelectedPostId(postId);
@@ -76,7 +83,36 @@ function CommunityContent() {
         <div className="min-h-screen bg-white">
             <AppNavbar activeTab="community" />
 
-            {view === "feed" && (
+            {/* Main Tabs */}
+            <div className="border-b border-gray-custom-200 bg-white sticky top-16 z-10">
+                <div className="max-w-3xl mx-auto px-6">
+                    <div className="flex gap-1">
+                        {(["feed", "discover", "friends"] as const).map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => {
+                                    setActiveTab(tab);
+                                    if (tab === "feed") setView("feed");
+                                }}
+                                className={`px-5 py-4 font-medium transition-colors relative ${activeTab === tab
+                                    ? "text-primary"
+                                    : "text-gray-custom-500 hover:text-dark"
+                                    }`}
+                            >
+                                {tab === "feed" && "📝 Feed"}
+                                {tab === "discover" && "🔍 Discover"}
+                                {tab === "friends" && `👥 Friends${friends.length > 0 ? ` (${friends.length})` : ""}`}
+                                {activeTab === tab && (
+                                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Feed Tab */}
+            {activeTab === "feed" && view === "feed" && (
                 <div className="max-w-3xl mx-auto px-6 py-8">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-8">
@@ -97,8 +133,8 @@ function CommunityContent() {
                         <button
                             onClick={() => setFilterCategory("all")}
                             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${filterCategory === "all"
-                                    ? "bg-dark text-white"
-                                    : "bg-gray-custom-100 text-gray-custom-600 hover:bg-gray-custom-200"
+                                ? "bg-dark text-white"
+                                : "bg-gray-custom-100 text-gray-custom-600 hover:bg-gray-custom-200"
                                 }`}
                         >
                             All
@@ -108,8 +144,8 @@ function CommunityContent() {
                                 key={cat.id}
                                 onClick={() => setFilterCategory(cat.id)}
                                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap flex items-center gap-1 ${filterCategory === cat.id
-                                        ? "bg-dark text-white"
-                                        : "bg-gray-custom-100 text-gray-custom-600 hover:bg-gray-custom-200"
+                                    ? "bg-dark text-white"
+                                    : "bg-gray-custom-100 text-gray-custom-600 hover:bg-gray-custom-200"
                                     }`}
                             >
                                 <span>{cat.icon}</span>
@@ -138,7 +174,65 @@ function CommunityContent() {
                 </div>
             )}
 
-            {view === "post-detail" && selectedPostId && (
+            {/* Discover Tab */}
+            {activeTab === "discover" && (
+                <div className="max-w-3xl mx-auto px-6 py-8">
+                    <div className="mb-6">
+                        <h1 className="font-primary text-3xl font-bold text-dark mb-2">Discover Learners</h1>
+                        <p className="text-gray-custom-600">Find language partners at your level</p>
+                    </div>
+                    <FriendDiscovery
+                        embedded={true}
+                        onFriendAdded={() => {
+                            refreshFriends();
+                        }}
+                    />
+                </div>
+            )}
+
+            {/* Friends Tab */}
+            {activeTab === "friends" && (
+                <div className="max-w-3xl mx-auto px-6 py-8">
+                    <h1 className="font-primary text-3xl font-bold text-dark mb-6">Your Friends</h1>
+                    {friends.length === 0 ? (
+                        <div className="text-center py-16">
+                            <div className="text-6xl mb-4">👥</div>
+                            <p className="text-gray-custom-600 mb-4">No friends yet</p>
+                            <button
+                                onClick={() => setActiveTab("discover")}
+                                className="px-6 py-3 bg-primary text-white font-medium rounded-full hover:bg-primary/90 transition-colors"
+                            >
+                                Discover People
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid gap-4">
+                            {friends.map((friend) => (
+                                <div
+                                    key={friend.id}
+                                    className="bg-white border border-gray-custom-200 rounded-2xl p-5 flex items-center gap-4"
+                                >
+                                    <div className="w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white text-xl font-bold">
+                                        {friend.displayName.charAt(0)}
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-dark">{friend.displayName}</h3>
+                                        <p className="text-sm text-gray-custom-600">
+                                            {friend.level} • {friend.mutualFriends} mutual friends
+                                        </p>
+                                    </div>
+                                    <button className="px-4 py-2 bg-gray-custom-100 text-gray-custom-700 rounded-full hover:bg-gray-custom-200 transition-colors text-sm font-medium">
+                                        Message
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Post Detail View - still works within feed tab */}
+            {activeTab === "feed" && view === "post-detail" && selectedPostId && (
                 <PostDetailView
                     postId={selectedPostId}
                     onBack={handleBack}
@@ -147,7 +241,7 @@ function CommunityContent() {
                 />
             )}
 
-            {view === "create-post" && (
+            {activeTab === "feed" && view === "create-post" && (
                 <CreatePostView
                     onSubmit={handleCreatePost}
                     onCancel={() => setView("feed")}
@@ -427,8 +521,8 @@ function CreatePostView({ onSubmit, onCancel }: CreatePostViewProps) {
                                 key={cat.id}
                                 onClick={() => setCategory(cat.id)}
                                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-1 ${category === cat.id
-                                        ? "bg-primary text-white"
-                                        : "bg-gray-custom-100 text-gray-custom-600 hover:bg-gray-custom-200"
+                                    ? "bg-primary text-white"
+                                    : "bg-gray-custom-100 text-gray-custom-600 hover:bg-gray-custom-200"
                                     }`}
                             >
                                 <span>{cat.icon}</span>

@@ -135,6 +135,12 @@ export function resetDiscovery(): void {
     localStorage.removeItem(SKIPPED_KEY);
 }
 
+// Get added friends as user objects
+export function getAddedFriends(): DiscoverableUser[] {
+    const friendIds = getFriends();
+    return discoverableUsers.filter((u) => friendIds.includes(u.id));
+}
+
 // Get level color
 export function getLevelColor(level: string): string {
     switch (level) {
