@@ -11,32 +11,54 @@ html {
 }
 
 body {
+    background-color: #F7F6F3;
+    color: #4A463F;
     font-family: var(--font-secondary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* RTL Support */
-html[dir="rtl"] body {
-    direction: rtl;
+/* Smooth transitions for interactive elements */
+button,
+a,
+.transition-all {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Custom Gradient Classes */
-@layer utilities {
-    .gradient-hero {
-        background: linear-gradient(135deg, #3366FF 0%, #5B8DEF 100%);
-    }
+/* GPU acceleration for smoother animations */
+.hover\:scale-\[1\.02\]:hover,
+.hover\:scale-105:hover,
+.animate-spin,
+.animate-bounce {
+    will-change: transform;
+}
 
-    .gradient-cta {
-        background: linear-gradient(135deg, #00D26A 0%, #00E676 100%);
-    }
+/* RTL Support - Targeted for text, not structural layout mirroring */
+html[data-rtl="true"] .rtl-group,
+html[data-rtl="true"] p,
+html[data-rtl="true"] h1,
+html[data-rtl="true"] h2,
+html[data-rtl="true"] h3,
+html[data-rtl="true"] h4,
+html[data-rtl="true"] h5,
+html[data-rtl="true"] h6,
+html[data-rtl="true"] li,
+html[data-rtl="true"] input,
+html[data-rtl="true"] textarea,
+html[data-rtl="true"] span:not(.no-rtl) {
+    direction: rtl;
+    text-align: right;
+}
 
-    .gradient-text {
-        background: linear-gradient(135deg, #00D26A 0%, #7FFFB2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
+/* Ensure structural flex/grid containers remain LTR unless explicitly marked */
+html[data-rtl="true"] .flex,
+html[data-rtl="true"] .grid {
+    direction: ltr;
+}
+
+/* Localize specific elements that need mirroring without flipping the whole page */
+html[data-rtl="true"] .icon-rtl {
+    transform: scaleX(-1);
 }
 
 /* Phone Animation */
@@ -64,7 +86,7 @@ html[dir="rtl"] body {
     left: 0;
     right: 0;
     height: 120px;
-    background: white;
+    background: #F7F6F3;
     border-radius: 50% 50% 0 0 / 100% 100% 0 0;
 }
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
+import Providers from "@/components/Providers";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -25,8 +26,10 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" dir="ltr">
-            <body className={`${inter.variable} ${outfit.variable} font-secondary bg-white text-dark`}>
-                {children}
+            <body className={`${inter.variable} ${outfit.variable} font-secondary bg-linen text-ink`}>
+                <Providers>
+                    {children}
+                </Providers>
             </body>
         </html>
     );

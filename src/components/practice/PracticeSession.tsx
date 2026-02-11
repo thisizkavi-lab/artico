@@ -6,6 +6,7 @@ import {
     getAlphabetsPracticeSession,
     getQuestionInstruction,
 } from "@/lib/practice-data";
+import { getGreetingsPracticeSession } from "@/lib/greetings-practice";
 
 interface PracticeSessionProps {
     moduleId: string;
@@ -45,6 +46,8 @@ export default function PracticeSession({ moduleId, onComplete }: PracticeSessio
     useEffect(() => {
         if (moduleId === "alphabets") {
             setQuestions(getAlphabetsPracticeSession(10));
+        } else if (moduleId === "greetings") {
+            setQuestions(getGreetingsPracticeSession(10));
         }
         // Load voices
         if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -55,7 +58,7 @@ export default function PracticeSession({ moduleId, onComplete }: PracticeSessio
     const currentQuestion = questions[currentIndex];
 
     const handleAnswer = useCallback((answer: string) => {
-        if (showFeedback) return; // Prevent double-clicking
+        if (showFeedback) return;
 
         setSelectedAnswer(answer);
         setShowFeedback(true);
@@ -65,14 +68,12 @@ export default function PracticeSession({ moduleId, onComplete }: PracticeSessio
             setCorrectCount(prev => prev + 1);
         }
 
-        // Play correct answer sound
         if (currentQuestion?.audioLetter) {
             setTimeout(() => {
                 speak(currentQuestion.audioLetter!, 1);
             }, 500);
         }
 
-        // Move to next question after delay
         setTimeout(() => {
             if (currentIndex < questions.length - 1) {
                 setCurrentIndex(prev => prev + 1);
@@ -94,7 +95,7 @@ export default function PracticeSession({ moduleId, onComplete }: PracticeSessio
     if (questions.length === 0) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                <div className="w-10 h-10 border-4 border-cocoa border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }
@@ -116,25 +117,25 @@ export default function PracticeSession({ moduleId, onComplete }: PracticeSessio
     return (
         <div className="max-w-2xl mx-auto">
             {/* Title */}
-            <h1 className="font-primary text-2xl font-bold text-dark text-center mb-8 underline underline-offset-4">
+            <h1 className="font-primary text-2xl font-bold text-ink text-center mb-8 underline underline-offset-4">
                 Test Yourself
             </h1>
 
             {/* Progress */}
             <div className="flex items-center gap-4 mb-8">
-                <div className="flex-1 h-2 bg-gray-custom-200 rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-pebble rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-accent rounded-full transition-all duration-300"
+                        className="h-full bg-cocoa rounded-full transition-all duration-300"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
-                <span className="text-sm text-gray-custom-500 font-medium">
+                <span className="text-sm text-dust font-medium">
                     {currentIndex + 1}/{questions.length}
                 </span>
             </div>
 
             {/* Instruction */}
-            <p className="text-center text-gray-custom-600 mb-6">
+            <p className="text-center text-ash mb-6">
                 {getQuestionInstruction(currentQuestion.type)}
             </p>
 
@@ -142,10 +143,10 @@ export default function PracticeSession({ moduleId, onComplete }: PracticeSessio
             <div className="flex justify-center mb-10">
                 {currentQuestion.type === "audio-to-letter" ? (
                     // Audio prompt
-                    <div className="bg-amber-50 px-10 py-5 rounded-full flex items-center gap-4">
+                    <div className="bg-pebble px-10 py-5 rounded-full flex items-center gap-4">
                         <button
                             onClick={() => playAudio(false)}
-                            className="p-3 hover:bg-amber-100 rounded-full transition-colors"
+                            className="p-3 hover:bg-linen rounded-full transition-colors"
                         >
                             <svg className="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
@@ -153,7 +154,7 @@ export default function PracticeSession({ moduleId, onComplete }: PracticeSessio
                         </button>
                         <button
                             onClick={() => playAudio(true)}
-                            className="p-3 hover:bg-amber-100 rounded-full transition-colors"
+                            className="p-3 hover:bg-linen rounded-full transition-colors"
                         >
                             <svg className="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9z" />
@@ -162,10 +163,10 @@ export default function PracticeSession({ moduleId, onComplete }: PracticeSessio
                     </div>
                 ) : (
                     // Text prompt
-                    <div className="bg-amber-50 px-12 py-5 rounded-full">
+                    <div className="bg-pebble px-12 py-5 rounded-full">
                         <span className={`font-bold ${currentQuestion.type === "pronunciation-to-letter"
-                                ? "text-2xl text-red-500"
-                                : "text-4xl text-dark"
+                            ? "text-2xl text-cocoa"
+                            : "text-4xl text-ink"
                             }`}>
                             {currentQuestion.prompt}
                         </span>
@@ -179,12 +180,12 @@ export default function PracticeSession({ moduleId, onComplete }: PracticeSessio
                     const isSelected = selectedAnswer === option;
                     const isThisCorrect = option === currentQuestion.correctAnswer;
 
-                    let optionStyle = "border-2 border-dark text-red-500";
+                    let optionStyle = "border-2 border-ink text-cocoa";
                     if (showFeedback) {
                         if (isThisCorrect) {
-                            optionStyle = "border-2 border-accent bg-accent/10 text-accent";
+                            optionStyle = "border-2 border-cocoa bg-pebble text-cocoa";
                         } else if (isSelected && !isThisCorrect) {
-                            optionStyle = "border-2 border-red-500 bg-red-50 text-red-500";
+                            optionStyle = "border-2 border-ash bg-linen text-ash";
                         }
                     }
 
@@ -204,7 +205,7 @@ export default function PracticeSession({ moduleId, onComplete }: PracticeSessio
             {/* Feedback Display */}
             {showFeedback && (
                 <div className="flex justify-center gap-4">
-                    <div className={`px-12 py-4 rounded-full text-white font-bold text-lg ${isCorrect ? "bg-accent" : "bg-red-500"
+                    <div className={`px-12 py-4 rounded-full text-white font-bold text-lg ${isCorrect ? "bg-cocoa" : "bg-ash"
                         }`}>
                         {isCorrect ? "Correct" : "Incorrect*"}
                     </div>
@@ -237,15 +238,15 @@ function SessionComplete({ correct, total, onFinish }: SessionCompleteProps) {
     return (
         <div className="max-w-md mx-auto text-center py-12">
             <div className="text-6xl mb-6">{emoji}</div>
-            <h2 className="text-3xl font-bold text-dark mb-4">{message}</h2>
-            <p className="text-xl text-gray-custom-600 mb-2">
-                You got <span className="font-bold text-accent">{correct}</span> out of <span className="font-bold">{total}</span> correct
+            <h2 className="text-3xl font-bold text-ink mb-4">{message}</h2>
+            <p className="text-xl text-ash mb-2">
+                You got <span className="font-bold text-cocoa">{correct}</span> out of <span className="font-bold">{total}</span> correct
             </p>
-            <p className="text-4xl font-bold text-primary mb-8">{percentage}%</p>
+            <p className="text-4xl font-bold text-cocoa mb-8">{percentage}%</p>
 
             <button
                 onClick={onFinish}
-                className="px-10 py-4 bg-accent text-dark font-bold rounded-full hover:bg-accent-hover transition-colors shadow-lg"
+                className="px-10 py-4 bg-cocoa text-white font-bold rounded-full transition-colors shadow-lg"
             >
                 Continue
             </button>

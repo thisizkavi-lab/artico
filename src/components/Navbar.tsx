@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useLanguage } from "@/lib/language-context";
 import { languageInfo } from "@/lib/translations";
 
@@ -25,108 +26,71 @@ export default function Navbar({ onLogin }: NavbarProps) {
 
     return (
         <nav
-            className={`fixed top-0 left-0 right-0 z-50 py-3 transition-all duration-300 ${scrolled
-                ? "bg-white/98 backdrop-blur-xl shadow-sm"
-                : ""
+            className={`fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 ${scrolled
+                ? "bg-white shadow-sm"
+                : "bg-linen"
                 }`}
         >
             <div className="max-w-[1200px] mx-auto px-6 flex items-center justify-between">
                 {/* Logo */}
-                <div className="flex flex-col gap-0.5">
-                    <span
-                        className={`font-primary text-2xl font-extrabold tracking-tight ${scrolled ? "text-dark" : "text-white"
-                            }`}
-                    >
-                        artiCO
-                    </span>
-                    <span
-                        className={`text-xs font-medium ${scrolled ? "text-gray-custom-500" : "text-white/80"
-                            }`}
-                    >
-                        {t("tagline")}
-                    </span>
-                </div>
-
-                {/* Nav Links */}
-                <div className="hidden md:flex gap-9">
-                    {["howItWorks", "levels", "languages"].map((key) => (
-                        <a
-                            key={key}
-                            href={`#${key === "howItWorks" ? "how-it-works" : key}`}
-                            className={`font-semibold text-sm relative py-1 transition-colors ${scrolled
-                                ? "text-dark hover:text-primary"
-                                : "text-white/90 hover:text-white"
-                                }`}
-                        >
-                            {t(`nav.${key}`)}
-                        </a>
-                    ))}
-                </div>
+                <Link href="/" className="relative flex items-center h-14 w-44 hover:scale-[1.02] transition-transform duration-200">
+                    <img
+                        src="/logo.png"
+                        alt="artiCo"
+                        className="object-contain w-full h-full"
+                    />
+                </Link>
 
                 {/* Actions */}
-                <div className="flex items-center gap-3">
-                    {/* Language Picker */}
-                    <div className="relative">
-                        <button
-                            onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-                            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-semibold transition-all ${scrolled
-                                ? "bg-gray-custom-50 border border-gray-custom-100 text-dark hover:bg-gray-custom-100"
-                                : "bg-white/15 border border-white/25 text-white hover:bg-white/25"
-                                }`}
-                        >
-                            <span className="text-lg">{currentLang?.flag}</span>
-                            <span className="text-xs tracking-wide">{language.toUpperCase()}</span>
-                            <svg
-                                className={`w-3 h-3 opacity-70 transition-transform ${langDropdownOpen ? "rotate-180" : ""
-                                    }`}
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                            >
-                                <path d="M6 9l6 6 6-6" />
-                            </svg>
-                        </button>
-
-                        {langDropdownOpen && (
-                            <div className="absolute top-full mt-2 right-0 w-44 bg-white rounded-2xl shadow-lg p-2 z-50">
-                                {Object.entries(languageInfo).map(([code, info]) => (
-                                    <button
-                                        key={code}
-                                        onClick={() => {
-                                            setLanguage(code);
-                                            setLangDropdownOpen(false);
-                                        }}
-                                        className={`flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-left transition-colors ${code === language
-                                            ? "bg-accent-light text-accent-hover"
-                                            : "hover:bg-gray-custom-50 text-dark"
-                                            }`}
-                                    >
-                                        <span className="text-base">{info.flag}</span>
-                                        <span>{info.nativeName}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Login Button */}
+                <div className="flex items-center gap-4">
+                    {/* Globe Icon */}
                     <button
-                        onClick={onLogin}
-                        className={`hidden sm:flex items-center px-5 py-2.5 rounded-full font-semibold text-sm transition-all ${scrolled
-                            ? "border-2 border-gray-custom-300 text-dark hover:border-primary hover:text-primary"
-                            : "bg-white/15 border-2 border-white/30 text-white hover:bg-white/25"
-                            }`}
+                        onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                        className="w-10 h-10 rounded-full border border-pebble flex items-center justify-center text-ash hover:bg-pebble transition-colors"
                     >
-                        {t("nav.login")}
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M2 12h20" />
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                        </svg>
                     </button>
+
+                    {/* Language Dropdown */}
+                    {langDropdownOpen && (
+                        <div className="absolute top-20 right-6 w-44 bg-white rounded-2xl shadow-lg p-2 z-50 border border-divider">
+                            {Object.entries(languageInfo).map(([code, info]) => (
+                                <button
+                                    key={code}
+                                    onClick={() => {
+                                        setLanguage(code);
+                                        setLangDropdownOpen(false);
+                                    }}
+                                    className={`flex items-center gap-2.5 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-left transition-colors ${code === language
+                                        ? "bg-pebble text-ink"
+                                        : "hover:bg-linen text-ink"
+                                        }`}
+                                >
+                                    <span className="text-base">{info.flag}</span>
+                                    <span>{info.nativeName}</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
 
                     {/* Get Started Button */}
                     <button
                         onClick={onLogin}
-                        className="gradient-cta px-6 py-2.5 rounded-full font-bold text-sm text-dark shadow-button hover:translate-y-[-2px] transition-all"
+                        className="bg-cocoa text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-sm transition-all"
                     >
                         {t("nav.getStarted")}
+                    </button>
+
+                    {/* Login Button */}
+                    <button
+                        onClick={onLogin}
+                        className="hidden sm:flex items-center bg-pebble text-ink px-6 py-2.5 rounded-full font-bold text-sm transition-all"
+                    >
+                        {t("nav.login")}
                     </button>
                 </div>
             </div>

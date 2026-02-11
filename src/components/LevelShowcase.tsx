@@ -76,21 +76,21 @@ export default function LevelShowcase() {
                 <div
                     key={level.level}
                     className={`absolute w-[calc(100%-32px)] p-8 rounded-3xl text-center transition-all duration-500 ${level.isApex
-                            ? "gradient-hero border-none"
-                            : "bg-white border-2 border-gray-custom-100"
+                        ? "bg-cocoa text-white"
+                        : "bg-white border-2 border-divider"
                         } ${index === activeIndex
                             ? "opacity-100 scale-100"
                             : "opacity-0 scale-90 pointer-events-none"
                         }`}
                     style={{
-                        boxShadow: "0 8px 24px rgba(26, 26, 46, 0.08)",
+                        boxShadow: "0 8px 24px rgba(74, 70, 63, 0.08)",
                     }}
                 >
                     {/* Badge */}
                     <span
                         className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-5 ${level.isApex
-                                ? "bg-accent text-dark"
-                                : "bg-dark text-white"
+                            ? "bg-pebble text-ink"
+                            : "bg-ink text-white"
                             }`}
                     >
                         Level {level.level}
@@ -99,25 +99,24 @@ export default function LevelShowcase() {
                     {/* Icon */}
                     <div
                         className={`w-20 h-20 mx-auto mb-5 rounded-2xl flex items-center justify-center ${level.isApex
-                                ? "bg-white/20"
-                                : "bg-gradient-to-br from-primary to-primary-light"
+                            ? "bg-pebble"
+                            : "bg-cocoa"
                             }`}
-                        style={{ boxShadow: "0 8px 24px rgba(51, 102, 255, 0.25)" }}
                     >
-                        <div className={`w-10 h-10 ${level.isApex ? "text-white" : "text-white"}`}>
+                        <div className={`w-10 h-10 ${level.isApex ? "text-ink" : "text-white"}`}>
                             {level.icon}
                         </div>
                     </div>
 
                     {/* Content */}
                     <h3
-                        className={`font-primary font-bold text-xl mb-2 ${level.isApex ? "text-white" : "text-dark"
+                        className={`font-primary font-bold text-xl mb-2 ${level.isApex ? "text-white" : "text-ink"
                             }`}
                     >
                         {t(level.titleKey)}
                     </h3>
                     <p
-                        className={`text-sm italic ${level.isApex ? "text-white/80" : "text-gray-custom-500"
+                        className={`text-sm italic ${level.isApex ? "text-pebble" : "text-dust"
                             }`}
                     >
                         {t(level.taglineKey)}
@@ -129,8 +128,8 @@ export default function LevelShowcase() {
                             <span
                                 key={dotIndex}
                                 className={`w-2.5 h-2.5 rounded-full transition-all ${dotIndex === activeIndex
-                                        ? "bg-accent scale-125"
-                                        : "bg-gray-custom-300"
+                                    ? "bg-cocoa scale-125"
+                                    : "bg-pebble"
                                     }`}
                             />
                         ))}

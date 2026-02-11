@@ -28,10 +28,10 @@ export interface Comment {
 
 // Category config
 export const categories: { id: PostCategory; label: string; icon: string; color: string }[] = [
-    { id: "question", label: "Question", icon: "❓", color: "bg-purple-100 text-purple-700" },
-    { id: "tip", label: "Tip", icon: "💡", color: "bg-yellow-100 text-yellow-700" },
-    { id: "discussion", label: "Discussion", icon: "💬", color: "bg-blue-100 text-blue-700" },
-    { id: "resource", label: "Resource", icon: "📚", color: "bg-green-100 text-green-700" },
+    { id: "question", label: "Question", icon: "❓", color: "bg-pebble text-cocoa" },
+    { id: "tip", label: "Tip", icon: "💡", color: "bg-linen text-ink" },
+    { id: "discussion", label: "Discussion", icon: "💬", color: "bg-pebble text-ink" },
+    { id: "resource", label: "Resource", icon: "📚", color: "bg-linen text-cocoa" },
 ];
 
 export function getCategoryConfig(category: PostCategory) {
@@ -229,7 +229,7 @@ export function getUserVote(postId: string, userId: string): "up" | "down" | nul
 }
 
 // Format relative time
-export function formatRelativeTime(dateString: string): string {
+export function formatRelativeTime(dateString: string, t?: (key: string) => string): string {
     const date = new Date(dateString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -237,9 +237,16 @@ export function formatRelativeTime(dateString: string): string {
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffMins < 1) return "just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
+    if (t) {
+        if (diffMins < 1) return t("common.justNow");
+        if (diffMins < 60) return `${diffMins}${t("common.unit.m")} ${t("common.ago")}`;
+        if (diffHours < 24) return `${diffHours}${t("common.unit.h")} ${t("common.ago")}`;
+        if (diffDays < 7) return `${diffDays}${t("common.unit.d")} ${t("common.ago")}`;
+    } else {
+        if (diffMins < 1) return "just now";
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        if (diffDays < 7) return `${diffDays}d ago`;
+    }
     return date.toLocaleDateString();
 }

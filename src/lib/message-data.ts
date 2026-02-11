@@ -27,11 +27,11 @@ export interface Conversation {
 export type MessageTheme = "default" | "ocean" | "sunset" | "forest" | "purple";
 
 export const messageThemes: { id: MessageTheme; name: string; bg: string; bubble: string }[] = [
-    { id: "default", name: "Default", bg: "bg-white", bubble: "bg-primary" },
-    { id: "ocean", name: "Ocean", bg: "bg-gradient-to-b from-blue-50 to-cyan-50", bubble: "bg-cyan-500" },
-    { id: "sunset", name: "Sunset", bg: "bg-gradient-to-b from-orange-50 to-pink-50", bubble: "bg-orange-500" },
-    { id: "forest", name: "Forest", bg: "bg-gradient-to-b from-green-50 to-emerald-50", bubble: "bg-emerald-500" },
-    { id: "purple", name: "Purple", bg: "bg-gradient-to-b from-purple-50 to-indigo-50", bubble: "bg-purple-500" },
+    { id: "default", name: "Default", bg: "bg-white", bubble: "bg-cocoa" },
+    { id: "ocean", name: "Ocean", bg: "bg-linen", bubble: "bg-cocoa" },
+    { id: "sunset", name: "Sunset", bg: "bg-linen", bubble: "bg-cocoa" },
+    { id: "forest", name: "Forest", bg: "bg-linen", bubble: "bg-cocoa" },
+    { id: "purple", name: "Purple", bg: "bg-linen", bubble: "bg-cocoa" },
 ];
 
 // Mock conversations

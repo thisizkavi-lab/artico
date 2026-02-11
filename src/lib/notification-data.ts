@@ -24,12 +24,12 @@ export interface Notification {
 
 // Notification type config
 export const notificationConfig: Record<NotificationType, { icon: string; color: string }> = {
-    follow: { icon: "👤", color: "bg-blue-100 text-blue-600" },
-    like: { icon: "❤️", color: "bg-red-100 text-red-600" },
-    comment: { icon: "💬", color: "bg-green-100 text-green-600" },
-    view: { icon: "👁️", color: "bg-purple-100 text-purple-600" },
-    request: { icon: "🤝", color: "bg-amber-100 text-amber-600" },
-    suggestion: { icon: "✨", color: "bg-pink-100 text-pink-600" },
+    follow: { icon: "👤", color: "bg-pebble text-ink" },
+    like: { icon: "❤️", color: "bg-pebble text-ink" },
+    comment: { icon: "💬", color: "bg-pebble text-ink" },
+    view: { icon: "👁️", color: "bg-pebble text-ink" },
+    request: { icon: "🤝", color: "bg-pebble text-ink" },
+    suggestion: { icon: "✨", color: "bg-pebble text-ink" },
 };
 
 // Mock notifications

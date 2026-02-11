@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { LanguageProvider } from "@/lib/language-context";
-import { AuthProvider } from "@/lib/auth-context";
 import AppNavbar from "@/components/learn/AppNavbar";
+import { useLanguage } from "@/lib/language-context";
 import { levels } from "@/lib/course-data";
 import PracticeSession from "@/components/practice/PracticeSession";
 import TongueTwisterPlayer from "@/components/learn/TongueTwisterPlayer";
 
 type PracticeStep = "level-picker" | "module-picker" | "practice";
 
-function PracticeContent() {
+export default function PracticePage() {
+    const { t } = useLanguage();
     const [step, setStep] = useState<PracticeStep>("level-picker");
     const [selectedLevelId, setSelectedLevelId] = useState<string | null>(null);
     const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
@@ -52,11 +52,11 @@ function PracticeContent() {
             {/* Level Picker */}
             {step === "level-picker" && (
                 <div className="max-w-4xl mx-auto px-6 py-12">
-                    <h1 className="font-primary text-3xl font-bold text-dark text-center mb-4">
-                        Practice
+                    <h1 className="font-primary text-3xl font-bold text-ink text-center mb-4">
+                        {t("practice.title")}
                     </h1>
-                    <p className="text-center text-gray-custom-600 mb-10">
-                        Choose a level to practice
+                    <p className="text-center text-ash mb-10">
+                        {t("practice.chooseLevel")}
                     </p>
 
                     <div className="grid md:grid-cols-2 gap-6">
@@ -64,16 +64,16 @@ function PracticeContent() {
                             <button
                                 key={level.id}
                                 onClick={() => handleSelectLevel(level.id)}
-                                className="p-6 bg-white rounded-2xl border border-gray-custom-200 hover:border-primary hover:shadow-lg transition-all text-left group"
+                                className="p-6 bg-white rounded-2xl border border-divider hover:border-ink hover:shadow-lg transition-all text-left group"
                             >
                                 <div className="flex items-center gap-4 mb-3">
                                     <span className="text-4xl">{level.icon}</span>
                                     <div>
-                                        <h3 className="font-bold text-lg text-dark group-hover:text-primary transition-colors">
-                                            {level.title}
+                                        <h3 className="font-bold text-lg text-ink group-hover:text-cocoa transition-colors">
+                                            {t(`levels.${level.id}.title`)}
                                         </h3>
-                                        <p className="text-sm text-gray-custom-500">
-                                            {level.modules.filter(m => m.unlocked).length} modules available
+                                        <p className="text-sm text-dust">
+                                            {level.modules.filter(m => m.unlocked).length} {t("practice.modulesAvailable")}
                                         </p>
                                     </div>
                                 </div>
@@ -88,19 +88,19 @@ function PracticeContent() {
                 <div className="max-w-4xl mx-auto px-6 py-12">
                     <button
                         onClick={handleBack}
-                        className="flex items-center gap-2 text-gray-custom-600 hover:text-dark transition-colors mb-8"
+                        className="flex items-center gap-2 text-ash hover:text-ink transition-colors mb-8"
                     >
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M15 18l-6-6 6-6" />
                         </svg>
-                        Back to levels
+                        {t("practice.backToLevels")}
                     </button>
 
-                    <h1 className="font-primary text-3xl font-bold text-dark text-center mb-4">
-                        {selectedLevel.title}
+                    <h1 className="font-primary text-3xl font-bold text-ink text-center mb-4">
+                        {t(`levels.${selectedLevel.id}.title`)}
                     </h1>
-                    <p className="text-center text-gray-custom-600 mb-10">
-                        Choose a module to practice
+                    <p className="text-center text-ash mb-10">
+                        {t("practice.chooseModule")}
                     </p>
 
                     <div className="space-y-4">
@@ -108,20 +108,20 @@ function PracticeContent() {
                             <button
                                 key={module.id}
                                 onClick={() => handleSelectModule(module.id)}
-                                className="w-full flex items-center gap-5 p-6 bg-white rounded-2xl border border-gray-custom-200 hover:border-primary hover:shadow-md transition-all text-left group"
+                                className="w-full flex items-center gap-5 p-6 bg-white rounded-2xl border border-divider hover:border-ink hover:shadow-md transition-all text-left group"
                             >
-                                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center font-bold text-lg text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                <div className="w-12 h-12 rounded-xl bg-pebble flex items-center justify-center font-bold text-lg text-ink group-hover:bg-cocoa group-hover:text-white transition-colors">
                                     {index + 1}
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="font-bold text-lg text-dark mb-1">
+                                    <h3 className="font-bold text-lg text-ink mb-1">
                                         {module.title}
                                     </h3>
-                                    <p className="text-sm text-gray-custom-500">
+                                    <p className="text-sm text-dust">
                                         {module.description}
                                     </p>
                                 </div>
-                                <svg className="w-5 h-5 text-gray-custom-400 group-hover:text-primary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <svg className="w-5 h-5 text-dust group-hover:text-ink transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M9 18l6-6-6-6" />
                                 </svg>
                             </button>
@@ -135,20 +135,20 @@ function PracticeContent() {
                 selectedModule.id === "tongue-twisters" ? (
                     <TongueTwisterPlayer onClose={handleBack} />
                 ) : (
-                    <div className="min-h-screen bg-gray-custom-50">
-                        <div className="bg-white border-b border-gray-custom-200 px-6 py-4">
+                    <div className="min-h-screen bg-linen">
+                        <div className="bg-white border-b border-divider px-6 py-4">
                             <div className="max-w-4xl mx-auto flex items-center justify-between">
                                 <button
                                     onClick={handleBack}
-                                    className="flex items-center gap-2 text-gray-custom-600 hover:text-dark transition-colors"
+                                    className="flex items-center gap-2 text-ash hover:text-ink transition-colors"
                                 >
                                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <path d="M15 18l-6-6 6-6" />
                                     </svg>
-                                    Back
+                                    {t("common.back")}
                                 </button>
-                                <h2 className="font-bold text-dark">
-                                    Practice: {selectedModule.title}
+                                <h2 className="font-bold text-ink">
+                                    {t("practice.practiceTitle")}: {selectedModule.title}
                                 </h2>
                                 <div className="w-16" />
                             </div>
@@ -164,15 +164,5 @@ function PracticeContent() {
                 )
             )}
         </div>
-    );
-}
-
-export default function PracticePage() {
-    return (
-        <LanguageProvider>
-            <AuthProvider>
-                <PracticeContent />
-            </AuthProvider>
-        </LanguageProvider>
     );
 }

@@ -1,86 +1,130 @@
 "use client";
 
+import { useState } from "react";
 import { Level } from "@/lib/course-data";
+import OpenStaxNav from "./OpenStaxNav";
 
 interface LevelPageProps {
     level: Level;
-    onSelectModule: (moduleId: string) => void;
+    onSelectLesson: (lessonId: string, moduleId: string) => void;
     onBack?: () => void;
 }
 
-export default function LevelPage({ level, onSelectModule, onBack }: LevelPageProps) {
+export default function LevelPage({ level, onSelectLesson, onBack }: LevelPageProps) {
+    const [selectedLesson, setSelectedLesson] = useState<{ lessonId: string; moduleId: string } | null>(null);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+
+    const handleLessonSelect = (lessonId: string, moduleId: string) => {
+        setSelectedLesson({ lessonId, moduleId });
+        onSelectLesson(lessonId, moduleId);
+    };
+
+    // Get total lesson count
+    const totalLessons = level.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+
     return (
-        <div className="min-h-[calc(100vh-60px)] px-6 py-8 relative">
-            {/* Yellow gradient blur */}
-            <div className="absolute top-0 left-0 w-72 h-72 bg-gradient-to-br from-yellow-200 to-yellow-100 rounded-full blur-3xl opacity-50" />
-
-            <div className="relative z-10 max-w-4xl mx-auto">
-                {/* Back Button */}
-                {onBack && (
-                    <button
-                        onClick={onBack}
-                        className="flex items-center gap-2 text-gray-custom-600 hover:text-dark transition-colors mb-6"
-                    >
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M15 18l-6-6 6-6" />
-                        </svg>
-                        Back to Home
-                    </button>
-                )}
-
-                {/* Level Header Card */}
-                <div className="bg-gray-custom-50 rounded-3xl p-8 mb-10 flex items-center justify-between border border-gray-custom-100">
-                    <div className="max-w-lg">
-                        <h1 className="font-primary text-3xl font-bold text-dark mb-3">
-                            {level.title}
-                        </h1>
-                        <p className="text-gray-custom-600 leading-relaxed">
-                            {level.description}
-                        </p>
-                    </div>
-
-                    {/* Illustration placeholder */}
-                    <div className="hidden md:flex items-center justify-center w-32 h-32">
-                        <div className="text-6xl">{level.icon}</div>
-                    </div>
-                </div>
-
-                {/* Simple Module List */}
-                <div className="space-y-4">
-                    {level.modules.map((module, index) => (
-                        <button
-                            key={module.id}
-                            onClick={() => onSelectModule(module.id)}
-                            className="w-full flex items-center gap-5 p-6 bg-white rounded-2xl border border-gray-custom-200 hover:border-primary hover:shadow-md transition-all text-left group"
+        <div className="min-h-[calc(100vh-60px)] flex flex-col lg:flex-row">
+            {/* Left Sidebar - OpenStax Navigation */}
+            <div
+                className={`${sidebarOpen ? "lg:w-80 xl:w-96" : "lg:w-0"} lg:h-[calc(100vh-60px)] lg:sticky lg:top-[60px] border-r border-divider bg-white overflow-hidden flex flex-col transition-all duration-300`}
+            >
+                {sidebarOpen && (
+                    <>
+                        {/* Level Header */}
+                        <div
+                            className="p-6 border-b border-divider"
                         >
-                            {/* Module Number */}
-                            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center font-bold text-lg text-primary group-hover:bg-primary group-hover:text-white transition-colors">
-                                {index + 1}
+                            {onBack && (
+                                <button
+                                    onClick={onBack}
+                                    className="flex items-center gap-2 text-dust hover:text-ink transition-colors mb-4 text-sm"
+                                >
+                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M15 18l-6-6 6-6" />
+                                    </svg>
+                                    Back
+                                </button>
+                            )}
+                            <div className="flex items-center gap-3 mb-2">
+                                <span className="text-3xl">{level.icon}</span>
+                                <h1 className="font-bold text-xl text-ink">{level.title}</h1>
                             </div>
+                            <p className="text-dust text-sm leading-relaxed">
+                                {level.modules.length} modules • {totalLessons} lessons
+                            </p>
+                        </div>
 
-                            {/* Module Info */}
-                            <div className="flex-1">
-                                <h3 className="font-bold text-lg text-dark mb-1">
-                                    {module.title}
-                                </h3>
-                                <p className="text-sm text-gray-custom-500">
-                                    {module.lessons.length} lessons
-                                </p>
+                        {/* Navigation */}
+                        <OpenStaxNav
+                            level={level}
+                            onLessonSelect={handleLessonSelect}
+                        />
+                    </>
+                )}
+            </div>
+
+            {/* Sidebar Toggle Button */}
+            <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="hidden lg:flex fixed left-0 top-1/2 -translate-y-1/2 z-50 w-6 h-16 bg-white border border-divider border-l-0 rounded-r-lg items-center justify-center shadow-sm hover:bg-linen transition-all"
+                style={{ left: sidebarOpen ? "calc(24rem - 1px)" : "0" }}
+            >
+                <svg
+                    className={`w-4 h-4 text-dust transition-transform ${sidebarOpen ? "" : "rotate-180"}`}
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                >
+                    <path d="M15 18l-6-6 6-6" />
+                </svg>
+            </button>
+
+            {/* Right Content Area */}
+            <div className="flex-1 bg-linen p-8 lg:p-12">
+                {selectedLesson ? (
+                    <div className="max-w-3xl mx-auto">
+                        {/* Selected Lesson Preview */}
+                        <div className="bg-white rounded-2xl border border-divider p-8 shadow-sm">
+                            <div className="flex items-center gap-2 mb-4">
+                                <div
+                                    className="w-2 h-8 rounded-full bg-cocoa"
+                                />
+                                <span className="text-sm font-medium text-dust uppercase tracking-wider">
+                                    {level.modules.find(m => m.id === selectedLesson.moduleId)?.title}
+                                </span>
                             </div>
-
-                            {/* Arrow */}
-                            <svg
-                                className="w-5 h-5 text-gray-custom-400 group-hover:text-primary transition-colors"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
+                            <h2 className="text-2xl font-bold text-ink mb-4">
+                                {level.modules
+                                    .find(m => m.id === selectedLesson.moduleId)
+                                    ?.lessons.find(l => l.id === selectedLesson.lessonId)?.title}
+                            </h2>
+                            <p className="text-ash mb-6">
+                                Click below to start this lesson.
+                            </p>
+                            <button
+                                onClick={() => onSelectLesson(selectedLesson.lessonId, selectedLesson.moduleId)}
+                                className="px-6 py-3 rounded-xl font-semibold text-white bg-cocoa transition-all"
                             >
-                                <path d="M9 18l6-6-6-6" />
-                            </svg>
-                        </button>
-                    ))}
-                </div>
+                                Start Lesson
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="max-w-3xl mx-auto">
+                        {/* Welcome State */}
+                        <div className="text-center py-16">
+                            <div className="text-6xl mb-6">{level.icon}</div>
+                            <h2 className="text-3xl font-bold text-ink mb-4">{level.title}</h2>
+                            <p className="text-ash leading-relaxed max-w-lg mx-auto mb-8">
+                                {level.description}
+                            </p>
+                            <div className="inline-flex items-center gap-2 text-sm text-dust">
+                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M15 18l-6-6 6-6" />
+                                </svg>
+                                Select a lesson from the sidebar to begin
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

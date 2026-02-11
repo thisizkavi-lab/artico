@@ -45,9 +45,9 @@ export interface Relationship {
 
 // Post type config
 export const postTypes: { id: PostType; label: string; icon: string; color: string }[] = [
-    { id: "thought", label: "Thought", icon: "💭", color: "bg-blue-100 text-blue-700" },
-    { id: "log", label: "Learning Log", icon: "📝", color: "bg-green-100 text-green-700" },
-    { id: "showcase", label: "Showcase", icon: "✨", color: "bg-purple-100 text-purple-700" },
+    { id: "thought", label: "Thought", icon: "💭", color: "bg-pebble text-ink" },
+    { id: "log", label: "Learning Log", icon: "📝", color: "bg-linen text-cocoa" },
+    { id: "showcase", label: "Showcase", icon: "✨", color: "bg-pebble text-cocoa" },
 ];
 
 export function getPostTypeConfig(type: PostType) {

@@ -1,31 +1,32 @@
 "use client";
 
+import { useLanguage } from "@/lib/language-context";
+
 interface WelcomeScreenProps {
     onContinue: () => void;
 }
 
 export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
+    const { t } = useLanguage();
+
     return (
         <div className="min-h-[calc(100vh-60px)] flex flex-col items-center justify-center px-6 relative">
-            {/* Yellow gradient blur */}
-            <div className="absolute top-0 left-0 w-80 h-80 bg-gradient-to-br from-yellow-200 to-yellow-100 rounded-full blur-3xl opacity-60" />
-
             <div className="relative z-10 text-center max-w-lg">
-                <h1 className="text-2xl font-medium text-dark/80 mb-6">
-                    welcome to <span className="font-bold text-dark">artiCO</span>
+                <h1 className="text-2xl font-medium text-ash mb-6">
+                    {t("welcome.title")} <span className="font-bold text-ink">artiCO</span>
                 </h1>
 
-                <p className="text-2xl md:text-3xl font-bold text-dark leading-relaxed mb-2">
-                    here, you don&apos;t study English — you train it.
+                <p className="text-2xl md:text-3xl font-bold text-ink leading-relaxed mb-2">
+                    {t("welcome.subtitle1")}
                 </p>
-                <p className="text-2xl md:text-3xl font-bold text-dark leading-relaxed mb-12">
-                    your mouth, your mind, your <span className="italic">rhythm</span>.
+                <p className="text-2xl md:text-3xl font-bold text-ink leading-relaxed mb-12">
+                    {t("welcome.subtitle2")}
                 </p>
 
                 {/* Globe icon */}
                 <div className="mb-8">
                     <svg
-                        className="w-16 h-16 mx-auto text-dark/80"
+                        className="w-16 h-16 mx-auto text-ash"
                         viewBox="0 0 48 48"
                         fill="none"
                         stroke="currentColor"
@@ -40,15 +41,15 @@ export default function WelcomeScreen({ onContinue }: WelcomeScreenProps) {
                     </svg>
                 </div>
 
-                <p className="text-lg text-dark/70 mb-6">
-                    ready to start your language <span className="font-medium">training</span>?
+                <p className="text-lg text-dust mb-6">
+                    {t("welcome.prompt")}
                 </p>
 
                 <button
                     onClick={onContinue}
-                    className="px-10 py-3.5 bg-primary text-white font-bold rounded-full shadow-lg hover:bg-primary-dark transition-all hover:-translate-y-0.5"
+                    className="px-10 py-3.5 bg-cocoa text-white font-bold rounded-full shadow-sm transition-all"
                 >
-                    Let&apos;s Go
+                    {t("welcome.button")}
                 </button>
             </div>
         </div>

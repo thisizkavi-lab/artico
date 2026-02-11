@@ -1,40 +1,47 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { LanguageProvider } from "@/lib/language-context";
-import { AuthProvider, useAuth } from "@/lib/auth-context";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 import { getLevelById, getModuleById } from "@/lib/course-data";
 
 import AppNavbar from "@/components/learn/AppNavbar";
-import WelcomeScreen from "@/components/learn/WelcomeScreen";
 import LearnHome, { saveLastProgress } from "@/components/learn/LearnHome";
 import LevelPage from "@/components/learn/LevelPage";
-import ModulePage from "@/components/learn/ModulePage";
 import LessonViewer from "@/components/learn/LessonViewer";
 
-type LearnStep = "welcome" | "home" | "level-page" | "module-page" | "lesson";
+type LearnStep = "home" | "level-page" | "lesson";
 
-function LearnContent() {
+export default function LearnPage() {
     const { user, isLoading } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     const [mounted, setMounted] = useState(false);
-    const [step, setStep] = useState<LearnStep>("welcome");
+    const [step, setStep] = useState<LearnStep>("home");
     const [selectedLevelId, setSelectedLevelId] = useState<string | null>(null);
     const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
     const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
 
+    // Read URL params on mount
     useEffect(() => {
         setMounted(true);
 
-        // Check if user has seen welcome before
-        const hasSeenWelcome = localStorage.getItem("artico-seen-welcome");
+        const levelParam = searchParams.get("level");
+        const moduleParam = searchParams.get("module");
+        const lessonParam = searchParams.get("lesson");
 
-        if (hasSeenWelcome) {
-            setStep("home");
+        if (levelParam) {
+            setSelectedLevelId(levelParam);
+            if (moduleParam && lessonParam) {
+                setSelectedModuleId(moduleParam);
+                setSelectedLessonId(lessonParam);
+                setStep("lesson");
+            } else {
+                setStep("level-page");
+            }
         }
-    }, []);
+    }, [searchParams]);
 
     useEffect(() => {
         if (mounted && !isLoading && !user) {
@@ -62,11 +69,6 @@ function LearnContent() {
         }
     }, [selectedLevelId, selectedModuleId, selectedLessonId]);
 
-    const handleWelcomeContinue = () => {
-        localStorage.setItem("artico-seen-welcome", "true");
-        setStep("home");
-    };
-
     const handleSelectLevel = (levelId: string) => {
         setSelectedLevelId(levelId);
         setStep("level-page");
@@ -79,10 +81,7 @@ function LearnContent() {
         setStep("lesson");
     };
 
-    const handleSelectModule = (moduleId: string) => {
-        setSelectedModuleId(moduleId);
-        setStep("module-page");
-    };
+    // Module selection now handled within LevelPage - no separate module-page step
 
     const handleBackToHome = () => {
         setSelectedLevelId(null);
@@ -90,19 +89,9 @@ function LearnContent() {
         setStep("home");
     };
 
-    const handleBackToLevel = () => {
-        setSelectedModuleId(null);
-        setStep("level-page");
-    };
-
-    const handleSelectLesson = (lessonId: string) => {
-        setSelectedLessonId(lessonId);
-        setStep("lesson");
-    };
-
     const handleCloseLesson = () => {
         setSelectedLessonId(null);
-        setStep("module-page");
+        setStep("level-page");
     };
 
     const handleNextLesson = () => {
@@ -118,7 +107,7 @@ function LearnContent() {
     if (!mounted || isLoading) {
         return (
             <div className="min-h-screen bg-white flex items-center justify-center">
-                <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+                <div className="w-10 h-10 border-4 border-cocoa border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }
@@ -136,10 +125,6 @@ function LearnContent() {
         <div className="min-h-screen bg-white">
             {step !== "lesson" && <AppNavbar activeTab="learn" />}
 
-            {step === "welcome" && (
-                <WelcomeScreen onContinue={handleWelcomeContinue} />
-            )}
-
             {step === "home" && (
                 <LearnHome
                     onSelectLevel={handleSelectLevel}
@@ -150,17 +135,12 @@ function LearnContent() {
             {step === "level-page" && selectedLevel && (
                 <LevelPage
                     level={selectedLevel}
-                    onSelectModule={handleSelectModule}
+                    onSelectLesson={(lessonId, moduleId) => {
+                        setSelectedModuleId(moduleId);
+                        setSelectedLessonId(lessonId);
+                        setStep("lesson");
+                    }}
                     onBack={handleBackToHome}
-                />
-            )}
-
-            {step === "module-page" && selectedLevel && selectedModule && (
-                <ModulePage
-                    module={selectedModule}
-                    levelTitle={selectedLevel.title}
-                    onBack={handleBackToLevel}
-                    onSelectLesson={handleSelectLesson}
                 />
             )}
 
@@ -175,15 +155,5 @@ function LearnContent() {
                 />
             )}
         </div>
-    );
-}
-
-export default function LearnPage() {
-    return (
-        <LanguageProvider>
-            <AuthProvider>
-                <LearnContent />
-            </AuthProvider>
-        </LanguageProvider>
     );
 }

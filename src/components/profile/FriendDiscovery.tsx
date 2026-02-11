@@ -51,7 +51,6 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
             if (currentIndex < users.length - 1) {
                 setCurrentIndex((prev) => prev + 1);
             } else {
-                // Reset for demo purposes
                 resetDiscovery();
                 setUsers(getUndiscoveredUsers());
                 setCurrentIndex(0);
@@ -59,7 +58,6 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
         }, 300);
     }, [currentUser, currentIndex, users.length, onFriendAdded]);
 
-    // Touch/mouse handlers for swipe gesture
     const handleDragStart = (clientX: number) => {
         setIsDragging(true);
         startXRef.current = clientX;
@@ -85,7 +83,6 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
         }
     };
 
-    // Mouse events
     const onMouseDown = (e: React.MouseEvent) => handleDragStart(e.clientX);
     const onMouseMove = (e: React.MouseEvent) => handleDragMove(e.clientX);
     const onMouseUp = () => handleDragEnd();
@@ -93,26 +90,24 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
         if (isDragging) handleDragEnd();
     };
 
-    // Touch events
     const onTouchStart = (e: React.TouchEvent) => handleDragStart(e.touches[0].clientX);
     const onTouchMove = (e: React.TouchEvent) => handleDragMove(e.touches[0].clientX);
     const onTouchEnd = () => handleDragEnd();
 
-    // Calculate card rotation based on drag
     const rotation = dragOffset * 0.1;
     const opacity = Math.max(0, 1 - Math.abs(dragOffset) / 300);
 
     if (!currentUser) {
         return (
-            <div className={embedded ? "" : "fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"}>
+            <div className={embedded ? "" : "fixed inset-0 bg-ink/50 z-50 flex items-center justify-center p-4"}>
                 <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center">
                     <div className="text-6xl mb-4">🎉</div>
-                    <h2 className="font-bold text-2xl text-dark mb-2">All caught up!</h2>
-                    <p className="text-gray-custom-500 mb-6">You've seen everyone. Check back later!</p>
+                    <h2 className="font-bold text-2xl text-ink mb-2">All caught up!</h2>
+                    <p className="text-dust mb-6">You've seen everyone. Check back later!</p>
                     {!embedded && onClose && (
                         <button
                             onClick={onClose}
-                            className="px-8 py-3 bg-primary text-white font-medium rounded-full hover:bg-primary/90"
+                            className="px-8 py-3 bg-cocoa text-white font-medium rounded-full"
                         >
                             Done
                         </button>
@@ -122,7 +117,7 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
         );
     }
 
-    // Embedded mode - simpler layout
+    // Embedded mode
     if (embedded) {
         return (
             <div className="flex flex-col items-center">
@@ -147,20 +142,20 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
                 >
                     {/* Swipe indicators */}
                     {dragOffset > 50 && (
-                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-accent text-white font-bold rounded-full text-sm z-10">
+                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-cocoa text-white font-bold rounded-full text-sm z-10">
                             ✓ ADD FRIEND
                         </div>
                     )}
                     {dragOffset < -50 && (
-                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-red-500 text-white font-bold rounded-full text-sm z-10">
+                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-ash text-white font-bold rounded-full text-sm z-10">
                             ✗ SKIP
                         </div>
                     )}
 
                     {/* Profile Card */}
-                    <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-custom-200">
+                    <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-divider">
                         {/* Avatar Section */}
-                        <div className="bg-gradient-to-br from-primary to-secondary p-8 flex justify-center">
+                        <div className="bg-cocoa p-8 flex justify-center">
                             <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-4xl border-4 border-white/30">
                                 {currentUser.displayName.charAt(0)}
                             </div>
@@ -169,8 +164,8 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
                         {/* Info Section */}
                         <div className="p-6">
                             <div className="text-center mb-4">
-                                <h2 className="font-bold text-2xl text-dark">{currentUser.displayName}</h2>
-                                <p className="text-gray-custom-500">@{currentUser.username}</p>
+                                <h2 className="font-bold text-2xl text-ink">{currentUser.displayName}</h2>
+                                <p className="text-dust">@{currentUser.username}</p>
                             </div>
 
                             {/* Level Badge */}
@@ -181,7 +176,7 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
                             </div>
 
                             {/* Bio */}
-                            <p className="text-gray-custom-600 text-center mb-4 leading-relaxed">
+                            <p className="text-ash text-center mb-4 leading-relaxed">
                                 {currentUser.bio}
                             </p>
 
@@ -190,7 +185,7 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
                                 {currentUser.interests.map((interest) => (
                                     <span
                                         key={interest}
-                                        className="px-3 py-1 bg-gray-custom-100 text-gray-custom-600 rounded-full text-xs"
+                                        className="px-3 py-1 bg-pebble text-ash rounded-full text-xs"
                                     >
                                         {interest}
                                     </span>
@@ -199,7 +194,7 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
 
                             {/* Mutual Friends */}
                             {currentUser.mutualFriends > 0 && (
-                                <p className="text-center text-sm text-gray-custom-500">
+                                <p className="text-center text-sm text-dust">
                                     👥 {currentUser.mutualFriends} mutual friends
                                 </p>
                             )}
@@ -208,13 +203,13 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
                 </div>
 
                 {/* Counter */}
-                <p className="text-sm text-gray-custom-500 mt-4 mb-4">{currentIndex + 1} of {users.length}</p>
+                <p className="text-sm text-dust mt-4 mb-4">{currentIndex + 1} of {users.length}</p>
 
                 {/* Action Buttons */}
                 <div className="flex justify-center gap-6 mb-4">
                     <button
                         onClick={() => handleSwipe("left")}
-                        className="w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors border-2 border-gray-custom-100 hover:border-red-200"
+                        className="w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center text-ash hover:bg-pebble transition-colors border-2 border-divider hover:border-ash"
                     >
                         <svg className="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
@@ -222,7 +217,7 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
                     </button>
                     <button
                         onClick={() => handleSwipe("right")}
-                        className="w-14 h-14 rounded-full bg-accent shadow-lg flex items-center justify-center text-white hover:bg-accent/90 transition-colors"
+                        className="w-14 h-14 rounded-full bg-cocoa shadow-lg flex items-center justify-center text-white transition-colors"
                     >
                         <svg className="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
@@ -231,7 +226,7 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
                 </div>
 
                 {/* Instructions */}
-                <p className="text-center text-sm text-gray-custom-400">
+                <p className="text-center text-sm text-dust">
                     Swipe right to add • Swipe left to skip
                 </p>
             </div>
@@ -239,17 +234,17 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
     }
 
     return (
-        <div className="fixed inset-0 bg-gradient-to-b from-primary/5 to-secondary/5 z-50">
+        <div className="fixed inset-0 bg-linen z-50">
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-sm border-b border-gray-custom-100">
-                <button onClick={onClose} className="flex items-center gap-2 text-gray-custom-600 hover:text-dark">
+            <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-divider">
+                <button onClick={onClose} className="flex items-center gap-2 text-ash hover:text-ink">
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M15 18l-6-6 6-6" />
                     </svg>
                     Back
                 </button>
-                <h1 className="font-bold text-dark">Find Friends</h1>
-                <p className="text-sm text-gray-custom-500">{currentIndex + 1}/{users.length}</p>
+                <h1 className="font-bold text-ink">Find Friends</h1>
+                <p className="text-sm text-dust">{currentIndex + 1}/{users.length}</p>
             </div>
 
             {/* Card Stack */}
@@ -274,20 +269,20 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
                 >
                     {/* Swipe indicators */}
                     {dragOffset > 50 && (
-                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-accent text-white font-bold rounded-full text-sm z-10">
+                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-cocoa text-white font-bold rounded-full text-sm z-10">
                             ✓ ADD FRIEND
                         </div>
                     )}
                     {dragOffset < -50 && (
-                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-red-500 text-white font-bold rounded-full text-sm z-10">
+                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-ash text-white font-bold rounded-full text-sm z-10">
                             ✗ SKIP
                         </div>
                     )}
 
                     {/* Profile Card */}
-                    <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-custom-100">
+                    <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-divider">
                         {/* Avatar Section */}
-                        <div className="bg-gradient-to-br from-primary to-secondary p-8 flex justify-center">
+                        <div className="bg-cocoa p-8 flex justify-center">
                             <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-4xl border-4 border-white/30">
                                 {currentUser.displayName.charAt(0)}
                             </div>
@@ -296,8 +291,8 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
                         {/* Info Section */}
                         <div className="p-6">
                             <div className="text-center mb-4">
-                                <h2 className="font-bold text-2xl text-dark">{currentUser.displayName}</h2>
-                                <p className="text-gray-custom-500">@{currentUser.username}</p>
+                                <h2 className="font-bold text-2xl text-ink">{currentUser.displayName}</h2>
+                                <p className="text-dust">@{currentUser.username}</p>
                             </div>
 
                             {/* Level Badge */}
@@ -308,7 +303,7 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
                             </div>
 
                             {/* Bio */}
-                            <p className="text-gray-custom-600 text-center mb-4 leading-relaxed">
+                            <p className="text-ash text-center mb-4 leading-relaxed">
                                 {currentUser.bio}
                             </p>
 
@@ -317,7 +312,7 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
                                 {currentUser.interests.map((interest) => (
                                     <span
                                         key={interest}
-                                        className="px-3 py-1 bg-gray-custom-100 text-gray-custom-600 rounded-full text-xs"
+                                        className="px-3 py-1 bg-pebble text-ash rounded-full text-xs"
                                     >
                                         {interest}
                                     </span>
@@ -326,7 +321,7 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
 
                             {/* Mutual Friends */}
                             {currentUser.mutualFriends > 0 && (
-                                <p className="text-center text-sm text-gray-custom-500">
+                                <p className="text-center text-sm text-dust">
                                     👥 {currentUser.mutualFriends} mutual friends
                                 </p>
                             )}
@@ -339,7 +334,7 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
             <div className="flex justify-center gap-6 pb-8">
                 <button
                     onClick={() => handleSwipe("left")}
-                    className="w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center text-red-500 hover:bg-red-50 transition-colors border-2 border-gray-custom-100 hover:border-red-200"
+                    className="w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center text-ash hover:bg-pebble transition-colors border-2 border-divider hover:border-ash"
                 >
                     <svg className="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
@@ -347,7 +342,7 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
                 </button>
                 <button
                     onClick={() => handleSwipe("right")}
-                    className="w-16 h-16 rounded-full bg-accent shadow-lg flex items-center justify-center text-white hover:bg-accent/90 transition-colors"
+                    className="w-16 h-16 rounded-full bg-cocoa shadow-lg flex items-center justify-center text-white transition-colors"
                 >
                     <svg className="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
@@ -356,7 +351,7 @@ export default function FriendDiscovery({ onClose, embedded = false, onFriendAdd
             </div>
 
             {/* Instructions */}
-            <p className="text-center text-sm text-gray-custom-400 pb-4">
+            <p className="text-center text-sm text-dust pb-4">
                 Swipe right to add • Swipe left to skip
             </p>
         </div>

@@ -21,6 +21,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         setMounted(true);
         const detected = detectUserLanguage();
         setLanguageState(detected);
+
+        // Update HTML attributes for detected language
+        if (typeof document !== "undefined") {
+            document.documentElement.lang = detected;
+            document.documentElement.setAttribute("data-rtl", languageInfo[detected]?.rtl ? "true" : "false");
+        }
     }, []);
 
     const setLanguage = (lang: string) => {
@@ -30,7 +36,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
             // Update HTML attributes
             document.documentElement.lang = lang;
-            document.documentElement.dir = languageInfo[lang]?.rtl ? "rtl" : "ltr";
+            document.documentElement.setAttribute("data-rtl", languageInfo[lang]?.rtl ? "true" : "false");
         }
     };
 

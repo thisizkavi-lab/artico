@@ -12,23 +12,20 @@ interface LettersLessonProps {
 // Text-to-speech helper with better voice
 function speak(text: string, rate: number = 1) {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
-        // Cancel any ongoing speech
         window.speechSynthesis.cancel();
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = rate;
-        utterance.pitch = 1.1; // Slightly higher pitch for clarity
+        utterance.pitch = 1.1;
         utterance.volume = 1;
         utterance.lang = "en-US";
 
-        // Try to get the best available voice
         const voices = window.speechSynthesis.getVoices();
-        // Prefer natural-sounding voices
         const preferredVoice =
-            voices.find((v) => v.name.includes("Samantha")) || // macOS
-            voices.find((v) => v.name.includes("Google US English")) || // Chrome
-            voices.find((v) => v.name.includes("Microsoft Zira")) || // Windows
-            voices.find((v) => v.name.includes("Karen")) || // macOS Australian
+            voices.find((v) => v.name.includes("Samantha")) ||
+            voices.find((v) => v.name.includes("Google US English")) ||
+            voices.find((v) => v.name.includes("Microsoft Zira")) ||
+            voices.find((v) => v.name.includes("Karen")) ||
             voices.find((v) => v.lang === "en-US" && v.localService) ||
             voices.find((v) => v.lang.startsWith("en"));
 
@@ -47,10 +44,8 @@ export default function LettersLesson({ onComplete }: LettersLessonProps) {
 
     const t = (key: string) => appT(key, language);
 
-    // Load voices on mount
     useEffect(() => {
         if (typeof window !== "undefined" && "speechSynthesis" in window) {
-            // Voices may not be loaded immediately
             window.speechSynthesis.getVoices();
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.getVoices();
@@ -84,14 +79,14 @@ export default function LettersLesson({ onComplete }: LettersLessonProps) {
                 </div>
 
                 {/* Good to Know Card */}
-                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-200 relative">
+                <div className="bg-pebble rounded-2xl p-5 border border-divider relative">
                     <div className="absolute top-3 right-3">
-                        <button className="text-gray-custom-400 hover:text-dark transition-colors text-sm">
+                        <button className="text-dust hover:text-ink transition-colors text-sm">
                             ×
                         </button>
                     </div>
-                    <h3 className="font-bold text-dark mb-3">{t("lesson.goodToKnow")}</h3>
-                    <p className="text-sm text-gray-custom-600 leading-relaxed">
+                    <h3 className="font-bold text-ink mb-3">{t("lesson.goodToKnow")}</h3>
+                    <p className="text-sm text-ash leading-relaxed">
                         {currentLetter.trivia}
                     </p>
                 </div>
@@ -103,24 +98,24 @@ export default function LettersLesson({ onComplete }: LettersLessonProps) {
                     onClick={goToPrevious}
                     disabled={currentIndex === 0}
                     className={`flex items-center gap-2 font-medium transition-colors ${currentIndex === 0
-                        ? "text-gray-custom-300 cursor-not-allowed"
-                        : "text-gray-custom-600 hover:text-dark"
+                        ? "text-pebble cursor-not-allowed"
+                        : "text-ash hover:text-ink"
                         }`}
                 >
                     {t("lesson.previous")}
                 </button>
 
                 {/* Progress Bar */}
-                <div className="flex-1 mx-8 h-2 bg-gray-custom-200 rounded-full overflow-hidden">
+                <div className="flex-1 mx-8 h-2 bg-pebble rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-accent rounded-full transition-all duration-300"
+                        className="h-full bg-cocoa rounded-full transition-all duration-300"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
 
                 <button
                     onClick={goToNext}
-                    className="flex items-center gap-2 font-medium text-gray-custom-600 hover:text-dark transition-colors"
+                    className="flex items-center gap-2 font-medium text-ash hover:text-ink transition-colors"
                 >
                     {currentIndex === alphabetData.length - 1 ? t("lesson.finish") : t("lesson.next")}
                 </button>
@@ -133,10 +128,10 @@ export default function LettersLesson({ onComplete }: LettersLessonProps) {
                         key={l.letter}
                         onClick={() => setCurrentIndex(idx)}
                         className={`w-7 h-7 rounded-full text-xs font-medium transition-all ${idx === currentIndex
-                            ? "bg-primary text-white scale-110"
+                            ? "bg-cocoa text-white scale-110"
                             : idx < currentIndex
-                                ? "bg-accent text-dark"
-                                : "bg-gray-custom-100 text-gray-custom-500 hover:bg-gray-custom-200"
+                                ? "bg-pebble text-ink"
+                                : "bg-linen text-dust hover:bg-pebble"
                             }`}
                     >
                         {l.letter}
@@ -156,7 +151,6 @@ function LetterCard({ letter, language }: LetterCardProps) {
     const t = (key: string) => appT(key, language);
 
     const playLetterSound = useCallback((slow: boolean = false) => {
-        // Just say the letter naturally (lowercase to avoid "capital A")
         speak(letter.letter.toLowerCase(), slow ? 0.4 : 1.0);
     }, [letter]);
 
@@ -167,21 +161,21 @@ function LetterCard({ letter, language }: LetterCardProps) {
     return (
         <div className="space-y-6">
             {/* Large Letter Display */}
-            <div className="bg-white rounded-3xl border-2 border-dashed border-gray-custom-300 p-8 text-center">
+            <div className="bg-white rounded-3xl border-2 border-dashed border-pebble p-8 text-center">
                 <div className="flex items-center justify-center gap-8 mb-4">
-                    <span className="text-8xl font-bold text-dark">{letter.uppercase}</span>
-                    <span className="text-8xl font-medium text-dark">{letter.lowercase}</span>
+                    <span className="text-8xl font-bold text-ink">{letter.uppercase}</span>
+                    <span className="text-8xl font-medium text-ink">{letter.lowercase}</span>
                 </div>
-                <p className="text-gray-custom-500 text-lg">{letter.ipa}</p>
+                <p className="text-dust text-lg">{letter.ipa}</p>
             </div>
 
             {/* Pronunciation */}
             <div className="text-center">
-                <p className="text-3xl font-bold text-red-500 mb-3">{letter.pronunciation}</p>
+                <p className="text-3xl font-bold text-cocoa mb-3">{letter.pronunciation}</p>
                 <div className="flex justify-center gap-4">
                     <button
                         onClick={() => playLetterSound(false)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-custom-100 rounded-full hover:bg-gray-custom-200 transition-colors active:scale-95"
+                        className="flex items-center gap-2 px-4 py-2 bg-linen rounded-full hover:bg-pebble transition-colors active:scale-95"
                     >
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
@@ -190,7 +184,7 @@ function LetterCard({ letter, language }: LetterCardProps) {
                     </button>
                     <button
                         onClick={() => playLetterSound(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-custom-100 rounded-full hover:bg-gray-custom-200 transition-colors active:scale-95"
+                        className="flex items-center gap-2 px-4 py-2 bg-linen rounded-full hover:bg-pebble transition-colors active:scale-95"
                     >
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9z" />
@@ -202,25 +196,25 @@ function LetterCard({ letter, language }: LetterCardProps) {
 
             {/* Common Sounds */}
             <div>
-                <p className="text-center text-gray-custom-600 mb-4">
+                <p className="text-center text-ash mb-4">
                     {t("lesson.twoCommonSounds")} {letter.letter}:
                 </p>
                 <div className="space-y-3">
                     {letter.sounds.map((sound, idx) => (
                         <div
                             key={idx}
-                            className="flex items-center justify-between bg-gray-custom-50 rounded-xl px-5 py-4 border border-gray-custom-100"
+                            className="flex items-center justify-between bg-linen rounded-xl px-5 py-4 border border-divider"
                         >
-                            <span className="text-dark">
+                            <span className="text-ink">
                                 {idx + 1}. {sound.name} (
-                                <span className="text-red-500 font-medium">{sound.highlighted}</span>
+                                <span className="text-cocoa font-medium">{sound.highlighted}</span>
                                 {sound.example.replace(new RegExp(sound.highlighted, "i"), "")}
                                 )
                             </span>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => playExampleSound(sound.example, false)}
-                                    className="p-2 rounded-full hover:bg-gray-custom-200 transition-colors active:scale-95"
+                                    className="p-2 rounded-full hover:bg-pebble transition-colors active:scale-95"
                                     title={`Play "${sound.example}"`}
                                 >
                                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -229,7 +223,7 @@ function LetterCard({ letter, language }: LetterCardProps) {
                                 </button>
                                 <button
                                     onClick={() => playExampleSound(sound.example, true)}
-                                    className="p-2 rounded-full hover:bg-gray-custom-200 transition-colors active:scale-95"
+                                    className="p-2 rounded-full hover:bg-pebble transition-colors active:scale-95"
                                     title={`Play "${sound.example}" slowly`}
                                 >
                                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">

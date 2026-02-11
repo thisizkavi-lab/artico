@@ -13,11 +13,13 @@ interface AuthModalProps {
 export default function AuthModal({ isOpen, onClose, initialMode = "signup" }: AuthModalProps) {
     const [mode, setMode] = useState<"login" | "signup">(initialMode);
     const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [name, setName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
-    const { login, signup } = useAuth();
+    const { login, signup, loginWithGoogle } = useAuth();
     const router = useRouter();
 
     if (!isOpen) return null;
@@ -25,9 +27,15 @@ export default function AuthModal({ isOpen, onClose, initialMode = "signup" }: A
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+        setSuccessMessage("");
 
         if (!email.includes("@")) {
             setError("Please enter a valid email");
+            return;
+        }
+
+        if (password.length < 6) {
+            setError("Password must be at least 6 characters");
             return;
         }
 
@@ -39,12 +47,22 @@ export default function AuthModal({ isOpen, onClose, initialMode = "signup" }: A
         setIsLoading(true);
         try {
             if (mode === "signup") {
-                await signup(email, name);
+                const result = await signup(email, password, name);
+                if (result.error) {
+                    setError(result.error);
+                } else {
+                    onClose();
+                    router.push("/learn");
+                }
             } else {
-                await login(email);
+                const result = await login(email, password);
+                if (result.error) {
+                    setError(result.error);
+                } else {
+                    onClose();
+                    router.push("/learn");
+                }
             }
-            onClose();
-            router.push("/dashboard");
         } catch (err) {
             setError("Something went wrong. Please try again.");
         } finally {
@@ -54,38 +72,40 @@ export default function AuthModal({ isOpen, onClose, initialMode = "signup" }: A
 
     const handleGoogleSignIn = async () => {
         setIsLoading(true);
-        // Mock Google sign-in
-        await login("user@gmail.com", "Demo User");
-        onClose();
-        router.push("/dashboard");
+        try {
+            await loginWithGoogle();
+        } catch (err) {
+            setError("Something went wrong. Please try again.");
+            setIsLoading(false);
+        }
     };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
             <div
-                className="absolute inset-0 bg-dark/60 backdrop-blur-sm"
+                className="absolute inset-0 bg-ink"
                 onClick={onClose}
             />
 
             {/* Modal */}
-            <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 animate-fade-in">
+            <div className="relative w-full max-w-md bg-white rounded-3xl shadow-lg p-8 animate-fade-in">
                 {/* Close button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-custom-50 transition-colors"
+                    className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-linen transition-colors"
                 >
-                    <svg className="w-5 h-5 text-gray-custom-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <svg className="w-5 h-5 text-dust" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
                 </button>
 
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <h2 className="font-primary text-2xl font-bold text-dark mb-2">
+                    <h2 className="font-primary text-2xl font-bold text-ink mb-2">
                         {mode === "signup" ? "Create your free account" : "Welcome back"}
                     </h2>
-                    <p className="text-gray-custom-500 text-sm">
+                    <p className="text-dust text-sm">
                         {mode === "signup"
                             ? "Start your English learning journey today"
                             : "Log in to continue your progress"
@@ -97,7 +117,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = "signup" }: A
                 <button
                     onClick={handleGoogleSignIn}
                     disabled={isLoading}
-                    className="w-full flex items-center justify-center gap-3 px-6 py-3.5 border-2 border-gray-custom-200 rounded-2xl font-semibold text-dark hover:bg-gray-custom-50 transition-all disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-3 px-6 py-3.5 border-2 border-divider rounded-2xl font-semibold text-ink hover:bg-linen transition-all"
                 >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -110,9 +130,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = "signup" }: A
 
                 {/* Divider */}
                 <div className="flex items-center gap-4 my-6">
-                    <div className="flex-1 h-px bg-gray-custom-200" />
-                    <span className="text-sm text-gray-custom-500">or</span>
-                    <div className="flex-1 h-px bg-gray-custom-200" />
+                    <div className="flex-1 h-px bg-divider" />
+                    <span className="text-sm text-dust">or</span>
+                    <div className="flex-1 h-px bg-divider" />
                 </div>
 
                 {/* Form */}
@@ -123,7 +143,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = "signup" }: A
                             placeholder="Your name"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="w-full px-5 py-3.5 border-2 border-gray-custom-200 rounded-2xl text-dark placeholder:text-gray-custom-400 focus:border-primary focus:outline-none transition-colors"
+                            className="w-full px-5 py-3.5 border-2 border-divider rounded-2xl text-ink placeholder:text-dust focus:border-ink focus:outline-none transition-colors"
                         />
                     )}
 
@@ -132,23 +152,35 @@ export default function AuthModal({ isOpen, onClose, initialMode = "signup" }: A
                         placeholder="Email address"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-5 py-3.5 border-2 border-gray-custom-200 rounded-2xl text-dark placeholder:text-gray-custom-400 focus:border-primary focus:outline-none transition-colors"
+                        className="w-full px-5 py-3.5 border-2 border-divider rounded-2xl text-ink placeholder:text-dust focus:border-ink focus:outline-none transition-colors"
+                    />
+
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full px-5 py-3.5 border-2 border-divider rounded-2xl text-ink placeholder:text-dust focus:border-ink focus:outline-none transition-colors"
                     />
 
                     {error && (
-                        <p className="text-red-500 text-sm text-center">{error}</p>
+                        <p className="text-ink text-sm text-center font-semibold">{error}</p>
+                    )}
+
+                    {successMessage && (
+                        <p className="text-ink text-sm text-center">{successMessage}</p>
                     )}
 
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full gradient-cta py-4 rounded-2xl font-bold text-dark shadow-button hover:translate-y-[-2px] transition-all disabled:opacity-50 disabled:hover:translate-y-0"
+                        className="w-full bg-cocoa text-white py-4 rounded-2xl font-bold shadow-sm transition-all"
                     >
                         {isLoading ? (
                             <span className="inline-flex items-center gap-2">
                                 <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                 </svg>
                                 Please wait...
                             </span>
@@ -159,13 +191,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = "signup" }: A
                 </form>
 
                 {/* Toggle mode */}
-                <p className="text-center text-sm text-gray-custom-500 mt-6">
+                <p className="text-center text-sm text-dust mt-6">
                     {mode === "signup" ? (
                         <>
                             Already have an account?{" "}
                             <button
                                 onClick={() => setMode("login")}
-                                className="text-primary font-semibold hover:underline"
+                                className="text-ink font-semibold hover:underline"
                             >
                                 Log In
                             </button>
@@ -175,7 +207,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = "signup" }: A
                             Don&apos;t have an account?{" "}
                             <button
                                 onClick={() => setMode("signup")}
-                                className="text-primary font-semibold hover:underline"
+                                className="text-ink font-semibold hover:underline"
                             >
                                 Sign Up
                             </button>
